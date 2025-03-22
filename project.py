@@ -37,11 +37,6 @@ class PygameFacade:
                 pygame.quit()
                 exit()
 
-    def play_music(self, path):
-        music = pygame.mixer.music.load(path)
-        pygame.mixer.music.play(-1)
-
-
 class Player:
     def __init__(self, facade, x, y, grid_size):
         self.facade = facade
@@ -60,8 +55,7 @@ class Player:
 
     def check_collision(self, cell):
         if cell == 2: player.x, player.y = 0, n - 1
-        if cell == 4:
-            return True
+        if cell == 4: return True
 
 class Trap:
     def __init__(self, facade, x, y, grid_size, move_direction):
@@ -77,8 +71,7 @@ class Trap:
     def draw(self):
         self.facade.draw_rectangle(self.grid_size * self.x, self.grid_size * self.y, self.grid_size, self.grid_size, self.color)
 
-    def move(self):
-        global n
+    def move(self, n):
         if self.move_direction != (0, 0):
             self.t += 1
             if self.t == self.move_delay:
@@ -186,11 +179,10 @@ def generateLevel(SCREEN_SIZE, k, traps, key, moving_traps, facade):
 
     return g
 
-n = square = 0
-level = 0
+n = square = level = 0
 levels = {1: [5, "WASD to move", "Get to the opposite corner"], 2: [7], 3: [8], 4: [10], 5: [10, "Collect the key to open the lock"], 6: [11], 7: [12], 8: [13], 9: [14], 10: [10, "Avoid the traps"], 11: [10], 12: [12], 13: [14], 14: [15], 15: [18], 16: [20], 17: [21], 18: [22], 19: [24], 20: [7, "You win"]}
 
-pygame_facade = PygameFacade((SCREEN_SIZE, SCREEN_SIZE), "Escape the Cave")
+pygame_facade = PygameFacade((SCREEN_SIZE, SCREEN_SIZE), "Maze")
 player = Player(pygame_facade, 0, 0, 0)
 start = True
 
@@ -223,7 +215,7 @@ while running:
     pygame_facade.clear_screen()
 
     for trap in traps_list:
-        trap.move()
+        trap.move(n)
         trap.draw()
 
     for i in range(n):
